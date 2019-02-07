@@ -14,20 +14,16 @@ and open the template in the editor.
         <?php
         try {
 
-            if ($_POST["name"] and $_POST["email"]) {
-                $name = $_POST["name"];
-                $email = $_POST["email"];
-                echo $name;
-                echo $email;
-            }
-
             //db data
+            global $servername, $username, $password, $dbname, $conn;
             $servername = "localhost";
             $username = "root";
-            $password = "";
+            $password = "tegeran43";
+            $dbname = "interlcg";
+
 
             // Create connection
-            $conn = new mysqli($servername, $username, $password);
+            $conn = new mysqli($servername, $username, $password, $dbname);
 
             // Check connection
             if ($conn->connect_error) {
@@ -35,21 +31,93 @@ and open the template in the editor.
             }
 
             //detele it
-            echo "Has been connected";
+            echo "<br />Has been connected to DB";
+            
+            $sql = "select card_number from cards where cust_id IS null";
+            $result = $conn->query($sql);
+            print_r($result);
+            if ($result->num_rows > 0) {
+                // output data of each row
+                while ($row = $result->fetch_assoc()) {
+                    echo "Card number " . $row["card_number"] . "<br>";
+                }
+            } else {
+                echo "0 results";
+            }
 
 
+            if (empty($_POST["name"]) or empty($_POST["surname"]) or empty($_POST["address"]) or empty($_POST["email"]) or empty($_POST["telephone"])) {
+                echo "Error: All Fields Is Requred";
+            } else {
+
+                //check for alphabetical only
+                if (ctype_alpha($_POST["name"]) and ctype_alpha($_POST["surname"])) {
+                    $name = $_POST["name"];
+                    $surname = $_POST["surname"];
+                } else {
+                    echo "Wrong symbols in Name or Surname";
+                    $error_flg = "Y";
+                }
+
+
+                //email must contains @ and .
+                if (strpos($_POST["email"], '@') !== false and strpos($_POST["email"], '.') !== false) {
+                    //if (strpos($_POST["address"], '@') !== false and strpos($_POST["address"], '.') !== false) {                    
+                    $email = $_POST["email"];
+                } else {
+                    echo "Error : Enter e-mail in correct format";
+                    $error_flg = "Y";
+                }
+
+                $address = $_POST["address"];
+
+                // only numbers in phone
+                if (ctype_digit($_POST["telephone"])) {
+                    $telephone = $_POST["telephone"];
+                } else {
+                    echo "Error : Enter phone in correct format";
+                    $error_flg = "Y";
+                }
+
+                //no errors. Try to create new row in table customer
+                if (empty($error_flg)) {
+                    $q = "INSERT INTO customer (name, surname, address, email, telephone) VALUES ('" . $name . "', '" . $surname . "', '" . $address . "', '" . $email . "', '+" . $telephone . "')";
+                    echo "Query : " . $q; //delete it
+
+
+                    if ($conn->query($q) === TRUE) { //OK
+                        echo "New customer registered successfully";
+                    } else {
+                        echo "Error: " . $q . "<br>" . $conn->error;
+                    }
+                }
+            }
 
             //user reg form
             ?>
+            <br />
+            <br /><br />
+            <?php
+            
+            ?>
             <form action = "" method = "post">
                 Name: <input type = "text" name = "name"><br>
+                SurName: <input type = "text" name = "surname"><br>
+                Address: <input type = "text" name = "address"><br>
                 E-mail: <input type = "text" name = "email"><br>
-                <input type = "submit">
+                Telephone: +<input type = "text" name = "telephone"><br>
+                Card number <select name="cards">
+
+
+                    <option value="volvo">123456789</option>
+                </select>
+                <br><input type = "submit">
             </form>
             <?php
         } catch (Exception $e) {
             echo $e->getMessage();
         }
+        $conn->close();
         ?>
     </body>
 </html>
