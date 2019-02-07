@@ -3,6 +3,7 @@
 To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
+ффффф
 -->
 <html>
     <head>
@@ -19,11 +20,6 @@ and open the template in the editor.
                 echo $name;
                 echo $email;
             }
-
-
-
-
-
 
             //db data
             $servername = "localhost";
