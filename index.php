@@ -3,7 +3,7 @@
 To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
-ффффф
+
 -->
 <html>
     <head>
@@ -21,7 +21,6 @@ and open the template in the editor.
             $password = "tegeran43";
             $dbname = "interlcg";
 
-
             // Create connection
             $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -32,19 +31,6 @@ and open the template in the editor.
 
             //detele it
             echo "<br />Has been connected to DB";
-            
-            $sql = "select card_number from cards where cust_id IS null";
-            $result = $conn->query($sql);
-            print_r($result);
-            if ($result->num_rows > 0) {
-                // output data of each row
-                while ($row = $result->fetch_assoc()) {
-                    echo "Card number " . $row["card_number"] . "<br>";
-                }
-            } else {
-                echo "0 results";
-            }
-
 
             if (empty($_POST["name"]) or empty($_POST["surname"]) or empty($_POST["address"]) or empty($_POST["email"]) or empty($_POST["telephone"])) {
                 echo "Error: All Fields Is Requred";
@@ -69,6 +55,7 @@ and open the template in the editor.
                     $error_flg = "Y";
                 }
 
+                //Just address
                 $address = $_POST["address"];
 
                 // only numbers in phone
@@ -84,7 +71,6 @@ and open the template in the editor.
                     $q = "INSERT INTO customer (name, surname, address, email, telephone) VALUES ('" . $name . "', '" . $surname . "', '" . $address . "', '" . $email . "', '+" . $telephone . "')";
                     echo "Query : " . $q; //delete it
 
-
                     if ($conn->query($q) === TRUE) { //OK
                         echo "New customer registered successfully";
                     } else {
@@ -98,7 +84,6 @@ and open the template in the editor.
             <br />
             <br /><br />
             <?php
-            
             ?>
             <form action = "" method = "post">
                 Name: <input type = "text" name = "name"><br>
@@ -107,9 +92,23 @@ and open the template in the editor.
                 E-mail: <input type = "text" name = "email"><br>
                 Telephone: +<input type = "text" name = "telephone"><br>
                 Card number <select name="cards">
+                    <?php
+                    $sql = "select card_number from cards where cust_id IS null";
+                    $result = $conn->query($sql);
+                    print_r($result);
+                    if ($result->num_rows > 0) {
+                        // output data of each row
+                        while ($row = $result->fetch_assoc()) {
+                            // it must be somewhere here
+                            // echo "<option value='".$row["card_number"]."'>" . $row["card_number"] . "<br>";
+                            echo "Card number " . $row["card_number"] . "<br>";
+                        }
+                    } else {
+                        echo "0 results";
+                    }
+                    ?>
 
-
-                    <option value="volvo">123456789</option>
+                    
                 </select>
                 <br><input type = "submit">
             </form>
